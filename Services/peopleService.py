@@ -1,7 +1,8 @@
 from flask import Blueprint, request
 from models import db
+import uuid
 
-sub = Blueprint('hello_api', __name__, url_prefix='/api/people')
+sub = Blueprint('todo_api', __name__, url_prefix='/api/people')
 
 
 @sub.route('/getAll')
@@ -16,15 +17,19 @@ def get_by_id():
 
 @sub.route('/add', methods=['POST'])
 def add():
-    request_data = request.json if request.is_json else request.form
+    if not request.is_json:
+        raise Exception('Request Invalid. Because json Format Incorrect.')
 
-    fullname = request_data['fullname']
-    mobile = request_data['mobile']
-    birth_date = request_data['birth_date']
-    email = request_data['email']
-    status = request_data['status']
+    request_data = request.get_json()
 
-    new_person = db(id, fullname, mobile, birth_date, email, status)
+    code = uuid.uuid4()
+    fullname = request_data.get('fullname')
+    mobile = request_data.get('mobile')
+    birth_date = request_data.get('birth_date')
+    email = request_data.get('email')
+    status = True
+
+    new_person = db(code, fullname, mobile, birth_date, email, status)
 
     db.add(new_person)
 
