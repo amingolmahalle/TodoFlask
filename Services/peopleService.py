@@ -15,6 +15,11 @@ def get_by_id():
     return db.query.get(id)
 
 
+@sub.route('/getByMobile/<string:mobile>')
+def get_by_mobile(mobile):
+    return db.query.get(id)  # Book.query.filter_by(title = oldtitle).first():
+
+
 @sub.route('/add', methods=['POST'])
 def add():
     if not request.is_json:
