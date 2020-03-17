@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from main import db
 from models import Person, person_schema, people_schema
+import Utils.datetime as dt
 import uuid
 
 sub = Blueprint('todo_api', __name__, url_prefix='/api/people')
@@ -55,13 +56,16 @@ def add():
 
 @sub.route('/edit/<int:id>', methods=['PUT'])
 def edit(id):
-    request_data = request.json if request.is_json else request.form
+    if not request.is_json:
+        raise Exception('Request Invalid. Because json Format Incorrect.')
 
-    fullname = request_data['fullname']
-    mobile_number = request_data['mobile_number']
-    birth_date = request_data['birth_date']
-    email = request_data['email']
-    status = request_data['status']
+    request_data = request.get_json()
+
+    fullname = request_data.get('fullname', None)
+    mobile_number = request_data.get('mobile_number', None)
+    birth_date = request_data.get('birth_date', None)
+    email = request_data.get('email', None)
+    status = request_data.get('status', None)
 
     current_person = Person.query.get(id)
 
@@ -70,9 +74,11 @@ def edit(id):
     current_person.birth_date = birth_date
     current_person.email = email
     current_person.status = status if status is not None else current_person.status
-    # modified_date = datetime.now
+    current_person.modified_date = dt.datetime_now_utc()
 
     db.session.commit()
+
+    return person_schema.jsonify(current_person)
 
 
 @sub.route('/delete/<int:id>', methods=['DELETE'])
@@ -82,3 +88,5 @@ def delete_by_id(id):
     db.session.delete(person)
 
     db.session.commit()
+
+    return 'OK!'
