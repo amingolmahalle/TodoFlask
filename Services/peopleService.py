@@ -1,5 +1,6 @@
-from flask import Blueprint, request
-from models import db
+from flask import Blueprint, request, jsonify
+from main import db
+from models import Person, person_schema, people_schema
 import uuid
 
 sub = Blueprint('todo_api', __name__, url_prefix='/api/people')
@@ -7,17 +8,26 @@ sub = Blueprint('todo_api', __name__, url_prefix='/api/people')
 
 @sub.route('/getAll')
 def get_all():
-    return db.query.all()
+    response = Person.query.all()
+    result = people_schema.dump(response)
+
+    return jsonify(result)
 
 
 @sub.route('/getById/<int:id>')
-def get_by_id():
-    return db.query.get(id)
+def get_by_id(id):
+    response = Person.query.get(id)
+    result = person_schema.dump(response)
+
+    return jsonify(result)
 
 
 @sub.route('/getByMobile/<string:mobile>')
 def get_by_mobile(mobile):
-    return db.query.get(id)  # Book.query.filter_by(title = oldtitle).first():
+    response = Person.query.filter_by(mobile_number=mobile).first()
+    result = person_schema.dump(response)
+
+    return jsonify(result)
 
 
 @sub.route('/add', methods=['POST'])
@@ -27,21 +37,20 @@ def add():
 
     request_data = request.get_json()
 
-    code = uuid.uuid4()
+    code = str(uuid.uuid4())
     fullname = request_data.get('fullname')
-    mobile = request_data.get('mobile')
+    mobile_number = request_data.get('mobile_number')
     birth_date = request_data.get('birth_date')
     email = request_data.get('email')
     status = True
+    modified_date = None
 
-    new_person = db(code, fullname, mobile, birth_date, email, status)
+    new_person = Person(code, fullname, mobile_number, birth_date, email, status, modified_date)
 
-    db.add(new_person)
+    db.session.add(new_person)
+    db.session.commit()
 
-    try:
-        db.session.commit()
-    except:
-        db.session.rollback()
+    return person_schema.jsonify(new_person)
 
 
 @sub.route('/edit/<int:id>', methods=['PUT'])
@@ -49,32 +58,27 @@ def edit(id):
     request_data = request.json if request.is_json else request.form
 
     fullname = request_data['fullname']
-    mobile = request_data['mobile']
+    mobile_number = request_data['mobile_number']
     birth_date = request_data['birth_date']
     email = request_data['email']
     status = request_data['status']
 
-    person = db.query.get(id)
+    current_person = Person.query.get(id)
 
-    person.fullname = fullname
-    person.mobile = mobile
-    person.birth_date = birth_date
-    person.email = email
-    person.status = status
+    current_person.fullname = fullname
+    current_person.mobile_number = mobile_number
+    current_person.birth_date = birth_date
+    current_person.email = email
+    current_person.status = status if status is not None else current_person.status
+    # modified_date = datetime.now
 
-    try:
-        db.session.commit()
-    except:
-        db.session.rollback()
+    db.session.commit()
 
 
 @sub.route('/delete/<int:id>', methods=['DELETE'])
 def delete_by_id(id):
-    person = db.query.get(id)
+    person = Person.query.get(id)
 
     db.session.delete(person)
 
-    try:
-        db.session.commit()
-    except:
-        db.session.rollback()
+    db.session.commit()
