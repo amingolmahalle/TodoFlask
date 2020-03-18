@@ -1,4 +1,4 @@
-from models import db, User
+from Models.user import db, User
 
 
 def add(user):

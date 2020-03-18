@@ -1,6 +1,6 @@
 from flask import Flask
 import Services.UserService as userServices
-from models import db, ma
+from Models.configModel import db, ma
 
 if __name__ == '__main__':
     app = Flask(__name__)

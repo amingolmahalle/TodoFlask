@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from models import User, user_schema, users_schema
+from Models.user import User, user_schema, users_schema
 import Repositories.UserRepository as userRepository
 import Utils.datetime as dt
 import uuid

@@ -1,9 +1,5 @@
+from Models.configModel import db, ma
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
-
-db = SQLAlchemy()
-ma = Marshmallow()
 
 
 class User(db.Model):
