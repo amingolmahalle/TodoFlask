@@ -1,32 +1,32 @@
 from flask import Blueprint, request, jsonify
-from main import db
-from models import Person, person_schema, people_schema
+from models import User, user_schema, users_schema
+import Repositories.UserRepository as userRepository
 import Utils.datetime as dt
 import uuid
 
-sub = Blueprint('todo_api', __name__, url_prefix='/api/people')
+sub = Blueprint('todo_api', __name__, url_prefix='/api/users')
 
 
 @sub.route('/getAll')
 def get_all():
-    response = Person.query.all()
-    result = people_schema.dump(response)
+    response = userRepository.get_all()
+    result = users_schema.dump(response)
 
     return jsonify(result)
 
 
 @sub.route('/getById/<int:id>')
 def get_by_id(id):
-    response = Person.query.get(id)
-    result = person_schema.dump(response)
+    response = userRepository.get_by_id(id)
+    result = user_schema.dump(response)
 
     return jsonify(result)
 
 
 @sub.route('/getByMobile/<string:mobile>')
 def get_by_mobile(mobile):
-    response = Person.query.filter_by(mobile_number=mobile).first()
-    result = person_schema.dump(response)
+    response = userRepository.get_by_mobile(mobile)
+    result = user_schema.dump(response)
 
     return jsonify(result)
 
@@ -46,12 +46,12 @@ def add():
     status = True
     modified_date = None
 
-    new_person = Person(code, fullname, mobile_number, birth_date, email, status, modified_date)
+    new_user = User(code, fullname, mobile_number, birth_date, email, status, modified_date)
 
-    db.session.add(new_person)
-    db.session.commit()
+    userRepository.add(new_user)
+    userRepository.commit()
 
-    return person_schema.jsonify(new_person)
+    return user_schema.jsonify(new_user)
 
 
 @sub.route('/edit/<int:id>', methods=['PUT'])
@@ -67,26 +67,26 @@ def edit(id):
     email = request_data.get('email', None)
     status = request_data.get('status', None)
 
-    current_person = Person.query.get(id)
+    current_user = userRepository.get_by_id(id)
 
-    current_person.fullname = fullname
-    current_person.mobile_number = mobile_number
-    current_person.birth_date = birth_date
-    current_person.email = email
-    current_person.status = status if status is not None else current_person.status
-    current_person.modified_date = dt.datetime_now_utc()
+    current_user.fullname = fullname
+    current_user.mobile_number = mobile_number
+    current_user.birth_date = birth_date
+    current_user.email = email
+    current_user.status = status if status is not None else current_user.status
+    current_user.modified_date = dt.datetime_now_utc()
 
-    db.session.commit()
+    userRepository.commit()
 
-    return person_schema.jsonify(current_person)
+    return user_schema.jsonify(current_user)
 
 
 @sub.route('/delete/<int:id>', methods=['DELETE'])
 def delete_by_id(id):
-    person = Person.query.get(id)
+    user = userRepository.get_by_id(id)
 
-    db.session.delete(person)
+    userRepository.delete(user)
 
-    db.session.commit()
+    userRepository.commit()
 
     return 'OK!'

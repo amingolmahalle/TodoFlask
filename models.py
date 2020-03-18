@@ -6,8 +6,8 @@ db = SQLAlchemy()
 ma = Marshmallow()
 
 
-class Person(db.Model):
-    __tablename__ = "people"
+class User(db.Model):
+    __tablename__ = "user"
     id = db.Column(db.Integer, db.Sequence('seq_reg_id', start=1, increment=1), primary_key=True)
     code = db.Column(db.String(36), unique=True, nullable=False)
     fullname = db.Column(db.String(30), index=True, nullable=False)
@@ -28,13 +28,13 @@ class Person(db.Model):
         self.modified_date = modified_date
 
 
-# Person Schema
-class PersonSchema(ma.Schema):
+# User Schema
+class UserSchema(ma.Schema):
     class Meta:
         fields = ('id', 'code', 'fullname', 'mobile_number', 'birth_date',
                   'email', 'status', 'creation_date', 'modified_date')
 
 
 # Init Schema
-person_schema = PersonSchema()
-people_schema = PersonSchema(many=True)
+user_schema = UserSchema()
+users_schema = UserSchema(many=True)
