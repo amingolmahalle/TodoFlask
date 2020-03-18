@@ -1,4 +1,4 @@
-from Models.user import db, User
+from Models.User import db, User
 
 
 def add(user):
@@ -26,4 +26,4 @@ def commit():
 
 
 def rollback():
-    db.session.db.session.rollback()()
+    db.session.rollback()

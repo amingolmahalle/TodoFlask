@@ -1,9 +1,12 @@
 from flask import Flask
-import Services.UserService as userServices
-from Models.configModel import db, ma
+import Controllers.UserController as userController
+from Models.ConfigModel import db, ma
+from Middleware import Middleware
 
 if __name__ == '__main__':
     app = Flask(__name__)
+
+    app.wsgi_app = Middleware(app.wsgi_app)
 
     app.config['SECRET_KEY'] = '3d6f45a5fc12445dbac2f59c3b6c7cb1'
     app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+pymysql://develop:Aa123456!@localhost:3306/my_db'
@@ -15,5 +18,6 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
 
-    app.register_blueprint(userServices.sub)
+    app.register_blueprint(userController.sub)
+
     app.run(host='0.0.0.0', port=5050, debug=True)

@@ -1,4 +1,4 @@
-from Models.configModel import db, ma
+from Models.ConfigModel import db, ma
 from datetime import datetime
 
 
