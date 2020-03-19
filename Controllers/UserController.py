@@ -6,8 +6,8 @@ import uuid
 sub = Blueprint('todo_api', __name__, url_prefix='/api/users')
 
 
-@sub.route('/hello', methods=["POST"])
-def view():
+@sub.route('/getAll_by_pagination', methods=["POST"])
+def get_all_by_pagination():
     if not request.is_json:
         raise Exception('Request Invalid. Because json Format Incorrect.')
 
@@ -16,7 +16,7 @@ def view():
     page = request_data.get('page', 1)
     per_page = request_data.get('per_page', 10)
 
-    response = userService.view(page, per_page)
+    response = userService.get_all_by_pagination(page, per_page)
     result = users_schema.dump(response)
 
     return jsonify(result)

@@ -9,8 +9,11 @@ def delete(user):
     db.session.delete(user)
 
 
-def hello(page, per_page):
-    return User.query.order_by(User.creation_date.desc()).paginate(page, per_page, error_out=False).items
+def get_all_by_pagination(page, per_page):
+    return User.query\
+               .order_by(User.creation_date.desc())\
+               .paginate(page, per_page, error_out=False)\
+               .items
 
 
 def get_all():

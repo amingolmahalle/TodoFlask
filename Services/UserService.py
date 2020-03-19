@@ -3,8 +3,8 @@ import Repositories.UserRepository as userRepository
 import Utils.Datetime as Datetime
 
 
-def view(page=1, per_page=10):
-    return userRepository.hello(page, per_page)
+def get_all_by_pagination(page=1, per_page=10):
+    return userRepository.get_all_by_pagination(page, per_page)
 
 
 def get_all():
