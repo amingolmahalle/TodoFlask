@@ -6,6 +6,22 @@ import uuid
 sub = Blueprint('todo_api', __name__, url_prefix='/api/users')
 
 
+@sub.route('/hello', methods=["POST"])
+def view():
+    if not request.is_json:
+        raise Exception('Request Invalid. Because json Format Incorrect.')
+
+    request_data = request.get_json()
+
+    page = request_data.get('page', 1)
+    per_page = request_data.get('per_page', 10)
+
+    response = userService.view(page, per_page)
+    result = users_schema.dump(response)
+
+    return jsonify(result)
+
+
 @sub.route('/getAll', methods=["GET"])
 def get_all():
     response = userService.get_all()
@@ -22,7 +38,7 @@ def get_by_id(id):
     return jsonify(result)
 
 
-@sub.route('/getByMobile/<string:mobile>')
+@sub.route('/getByMobile/<string:mobile>', methods=["GET"])
 def get_by_mobile(mobile):
     response = userService.get_by_mobile(mobile)
     result = user_schema.dump(response)

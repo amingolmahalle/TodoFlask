@@ -1,11 +1,12 @@
 from flask import Flask
+from flask_cors import CORS
 import Controllers.UserController as userController
 from Models.ConfigModel import db, ma
 from Middleware import Middleware
 
 if __name__ == '__main__':
     app = Flask(__name__)
-
+    CORS(app)
     app.wsgi_app = Middleware(app.wsgi_app)
 
     app.config['SECRET_KEY'] = '3d6f45a5fc12445dbac2f59c3b6c7cb1'

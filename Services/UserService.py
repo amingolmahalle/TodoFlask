@@ -3,6 +3,10 @@ import Repositories.UserRepository as userRepository
 import Utils.Datetime as Datetime
 
 
+def view(page=1, per_page=10):
+    return userRepository.hello(page, per_page)
+
+
 def get_all():
     response = userRepository.get_all()
 
