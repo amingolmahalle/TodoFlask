@@ -6,6 +6,14 @@ import uuid
 sub = Blueprint('todo_api', __name__, url_prefix='/api/users')
 
 
+@sub.route('/getAll_by_query', methods=["GET"])
+def get_all_by_query():
+    response = userService.get_all_by_query()
+    result = users_schema.dump(response)
+
+    return jsonify(result)
+
+
 @sub.route('/getAll_by_pagination', methods=["POST"])
 def get_all_by_pagination():
     if not request.is_json:

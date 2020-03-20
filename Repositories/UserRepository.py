@@ -1,4 +1,23 @@
 from Models.User import db, User
+from Data.DataProviders.SqlDataProvider import SqlDataProvider
+
+
+def get_all_by_query():
+    command = '''SELECT
+                        id,
+                        code,
+                        fullname,
+                        mobile_number,
+                        birth_date,
+                        email,
+                        status,
+                        creation_date,
+                        modified_date
+                 FROM
+                        user      
+              '''
+
+    return SqlDataProvider().execute_query_command(command)
 
 
 def add(user):
