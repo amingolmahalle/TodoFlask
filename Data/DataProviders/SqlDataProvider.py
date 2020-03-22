@@ -1,9 +1,12 @@
 import pymysql
+from Web.program import program
 
 
 class SqlDataProvider:
     def __init__(self):
-        self.__db_connection = pymysql.connect("localhost", "develop", "Aa123456!", "my_db")
+        settings = program.load_configs()
+        self.__db_connection = pymysql.connect(settings["databaseAddress"], settings["username"],
+                                               settings["password"], settings["databaseName"])
 
     def __initialize_connection(self):
         self.__db_connection.connect_timeout = 30000000
