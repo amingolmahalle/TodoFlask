@@ -1,5 +1,6 @@
 from Validations.UserValidation import validation
 import Repositories.UserRepository as userRepository
+import Repositories.AddressRepository as addressRepository
 import Utils.Datetime as Datetime
 
 
@@ -31,10 +32,11 @@ def get_by_mobile(mobile):
     return response
 
 
-def add(user):
+def add(user, address):
     validation(user)
-
+    # validation address
     userRepository.add(user)
+    addressRepository.add(address)
 
     userRepository.commit()
 

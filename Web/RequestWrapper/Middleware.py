@@ -9,7 +9,7 @@ class Middleware:
         request = Request(environ)
         client_id = request.headers.get('client-id', None)
 
-        if client_id is None or not client_id:
+        if request.path != '/api/docs/' and (client_id is None or not client_id):
             raise Exception('empty header detected [client-id]')
 
         return self.app(environ, start_response)

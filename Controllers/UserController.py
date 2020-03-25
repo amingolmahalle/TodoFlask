@@ -1,5 +1,7 @@
 from flask import Blueprint, request, jsonify
-from Models.User import User, user_schema, users_schema
+from Models.Domain.User import User
+from Models.Schema.UserSchema import user_schema, users_schema
+from Models.Domain.Address import Address
 import Services.UserService as userService
 import uuid
 
@@ -66,12 +68,17 @@ def add():
     mobile_number = request_data.get('mobile_number')
     birth_date = request_data.get('birth_date')
     email = request_data.get('email')
+    country_name = request_data.get('country_name')
+    city_name = request_data.get('city_name')
+    postal_code = request_data.get('postal_code')
+    more_address = request_data.get('more_address')
     status = True
-    modified_date = None
 
-    new_user = User(code, fullname, mobile_number, birth_date, email, status, modified_date)
+    new_user = User(code, fullname, mobile_number, birth_date, email, status)
+    new_address = Address(country_name, city_name, postal_code, more_address)
+    new_user.addresses.append(new_address)
 
-    userService.add(new_user)
+    userService.add(new_user, new_address)
 
     return user_schema.jsonify(new_user)
 

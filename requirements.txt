@@ -5,3 +5,4 @@ Flask-SQLAlchemy==2.4.1
 flask-marshmallow==0.11.0
 marshmallow-sqlalchemy==0.22.3
 Flask-Cors==3.0.8
+flask-swagger-ui==3.25.0

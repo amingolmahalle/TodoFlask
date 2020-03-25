@@ -1,4 +1,5 @@
-from Models.User import db, User
+from Models.Domain.User import db, User
+from Models.Domain.Address import Address
 from Data.DataProviders.SqlDataProvider import SqlDataProvider
 
 
@@ -29,14 +30,15 @@ def delete(user):
 
 
 def get_all_by_pagination(page, per_page):
-    return User.query\
-               .order_by(User.creation_date.desc())\
-               .paginate(page, per_page, error_out=False)\
-               .items
+    return User.query \
+        .order_by(User.creation_date.desc()) \
+        .paginate(page, per_page, error_out=False) \
+        .items
 
 
 def get_all():
-    return User.query.all()
+    return User.query.join(Address).all()
+    # return db.session.query(User, Address).join(Address).all()
 
 
 def get_by_id(id):
