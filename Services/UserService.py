@@ -32,11 +32,12 @@ def get_by_mobile(mobile):
     return response
 
 
-def add(user, address):
+def add(user):
     validation(user)
     # validation address
+
     userRepository.add(user)
-    addressRepository.add(address)
+    addressRepository.add(user.addresses)
 
     userRepository.commit()
 

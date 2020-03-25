@@ -68,17 +68,20 @@ def add():
     mobile_number = request_data.get('mobile_number')
     birth_date = request_data.get('birth_date')
     email = request_data.get('email')
-    country_name = request_data.get('country_name')
-    city_name = request_data.get('city_name')
-    postal_code = request_data.get('postal_code')
-    more_address = request_data.get('more_address')
     status = True
 
     new_user = User(code, fullname, mobile_number, birth_date, email, status)
-    new_address = Address(country_name, city_name, postal_code, more_address)
-    new_user.addresses.append(new_address)
 
-    userService.add(new_user, new_address)
+    for address in request_data.get('addresses'):
+        country_name = address['country_name']
+        city_name = address['city_name']
+        postal_code = address['postal_code']
+        more_address = address['more_address']
+
+        new_address = Address(country_name, city_name, postal_code, more_address)
+        new_user.addresses.append(new_address)
+
+    userService.add(new_user)
 
     return user_schema.jsonify(new_user)
 
