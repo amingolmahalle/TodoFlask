@@ -1,4 +1,4 @@
-from Validations.UserValidation import validation
+from Services.Validations.UserValidation import validation
 import Repositories.UserRepository as userRepository
 import Repositories.AddressRepository as addressRepository
 import Utils.Datetime as Datetime
@@ -49,14 +49,17 @@ def edit(id, user):
 
     current_user = userRepository.get_by_id(id)
 
-    current_user.fullname = user.fullname if user.fullname is not None else current_user.fullname
-    current_user.mobile_number = user.mobile_number if user.mobile_number is not None else current_user.mobile_number
-    current_user.birth_date = user.birth_date
-    current_user.email = user.email if user.email is not None else current_user.email
-    current_user.status = user.status if user.status is not None else current_user.status
-    current_user.modified_date = Datetime.utc_now()
+    if current_user is not None:
+        current_user.fullname = user.fullname if user.fullname is not None else current_user.fullname
+        current_user.mobile_number = user.mobile_number if user.mobile_number is not None else current_user.mobile_number
+        current_user.birth_date = user.birth_date
+        current_user.email = user.email if user.email is not None else current_user.email
+        current_user.status = user.status if user.status is not None else current_user.status
+        current_user.modified_date = Datetime.utc_now()
+        current_user.addresses = user.addresses
 
-    userRepository.commit()
+        userRepository.merge(current_user)
+        userRepository.commit()
 
     return current_user
 

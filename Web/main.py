@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
-import Controllers.UserController as userController
+import Web.Controllers.UserController as UserController
 from Models.Domain.SharedModel import db
 from Models.Schema.SharedSchema import ma
 from Web.RequestWrapper.Middleware import Middleware
@@ -33,7 +33,7 @@ if __name__ == '__main__':
 
     # URL must match the one given to factory function above
     app.register_blueprint(swaggerConfig.setup_swagger(swagger_url, swagger_api_url), url_prefix=swagger_url)
-    app.register_blueprint(userController.sub)
+    app.register_blueprint(UserController.sub)
 
     args = argumentsConfig.get_args()
     PORT = int(os.environ.get('PORT', port))

@@ -27,6 +27,7 @@ class User(db.Model):
     modified_date = db.Column(db.DateTime,
                               nullable=True)
     addresses = db.relationship('Address',
+                                cascade='all, delete-orphan',
                                 backref='user',
                                 lazy=True)
 

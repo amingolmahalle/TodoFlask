@@ -40,9 +40,9 @@ def get_all():
     return jsonify(result)
 
 
-@sub.route('/getById/<int:id>', methods=["GET"])
-def get_by_id(id):
-    response = userService.get_by_id(id)
+@sub.route('/getById/<int:userId>', methods=["GET"])
+def get_by_id(userId):
+    response = userService.get_by_id(userId)
     result = user_schema.dump(response)
 
     return jsonify(result)
@@ -78,7 +78,7 @@ def add():
         postal_code = address['postal_code']
         more_address = address['more_address']
 
-        new_address = Address(country_name, city_name, postal_code, more_address)
+        new_address = Address(None, country_name, city_name, postal_code, more_address)
         new_user.addresses.append(new_address)
 
     userService.add(new_user)
@@ -86,8 +86,8 @@ def add():
     return user_schema.jsonify(new_user)
 
 
-@sub.route('/edit/<int:id>', methods=['PUT'])
-def edit(id):
+@sub.route('/edit/<int:userId>', methods=['PUT'])
+def edit(userId):
     if not request.is_json:
         raise Exception('Request Invalid. Because json Format Incorrect.')
 
@@ -98,16 +98,29 @@ def edit(id):
     birth_date = request_data.get('birth_date', None)
     email = request_data.get('email', None)
     status = request_data.get('status', None)
-
     edit_user = User(None, fullname, mobile_number, birth_date, email, status, None)
 
-    current_user = userService.edit(id, edit_user)
+    for address in request_data.get('addresses'):
+        id = address['id']
+        country_name = address['country_name']
+        city_name = address['city_name']
+        postal_code = address['postal_code']
+        more_address = address['more_address']
+
+        if id is None:
+            new_address = Address(country_name, city_name, postal_code, more_address)
+            edit_user.addresses.append(new_address)
+        else:
+            edit_address = Address(id, country_name, city_name, postal_code, more_address)
+            edit_user.addresses.append(edit_address)
+
+    current_user = userService.edit(userId, edit_user)
 
     return user_schema.jsonify(current_user)
 
 
-@sub.route('/delete/<int:id>', methods=['DELETE'])
-def delete_by_id(id):
-    userService.delete_by_id(id)
+@sub.route('/delete/<int:userId>', methods=['DELETE'])
+def delete_by_id(userId):
+    userService.delete_by_id(userId)
 
     return 'OK!'
