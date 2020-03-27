@@ -61,6 +61,22 @@ def get_by_mobile(mobile):
     return User.query.filter_by(mobile_number=mobile).one()
 
 
+def get_addresses_by_user_id(userId):
+    User.query.filter_by(user_id=userId).all()
+
+
+def add_address(address):
+    db.session.add(address)
+
+
+def add_range_address(addresses):
+    db.session.add_all(addresses)
+
+
+def delete_address(address):
+    db.session.delete(address)
+
+
 def commit():
     db.session.commit()
 

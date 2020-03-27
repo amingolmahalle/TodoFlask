@@ -22,8 +22,15 @@ class Address(db.Model):
                         db.ForeignKey('user.id', ondelete='CASCADE'),
                         nullable=False)
 
-    def __init__(self, country_name, city_name, postal_code, more_address,
-                 id=None, user_id=None, creation_date=None, modified_date=None):
+    def __init__(self,
+                 country_name,
+                 city_name,
+                 postal_code,
+                 more_address,
+                 id=None,
+                 user_id=None,
+                 creation_date=None,
+                 modified_date=None):
         self.id = id
         self.user_id = user_id
         self.country_name = country_name

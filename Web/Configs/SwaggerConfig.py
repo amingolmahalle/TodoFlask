@@ -11,14 +11,6 @@ def setup_swagger(swagger_url, api_url):
             # Swagger UI config overrides
             'app_name': "Todo Flask application"
         },
-        # oauth_config={  # OAuth config. See https://github.com/swagger-api/swagger-ui#oauth2-configuration .
-        #    'clientId': "your-client-id",my_db
-        #    'clientSecret': "your-client-secret-if-required",
-        #    'realm': "your-realms",
-        #    'appName': "your-app-name",
-        #    'scopeSeparator': " ",
-        #    'additionalQueryStringParams': {'test': "hello"}
-        # }
     )
     return swagger_ui_blueprint
 

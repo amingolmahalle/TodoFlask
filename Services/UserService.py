@@ -1,6 +1,5 @@
 from Services.Validations.UserValidation import validation
 import Repositories.UserRepository as userRepository
-import Repositories.AddressRepository as addressRepository
 import Services.Mapping.UserMapper as UserMapper
 import Utils.Datetime as Datetime
 
@@ -38,11 +37,10 @@ def get_by_mobile(mobile):
 
 
 def add(user):
-    validation(user)
-    # validation address
+    validation(user)  # validation address
 
     userRepository.add(user)
-    addressRepository.add_range(user.addresses)
+    userRepository.add_range(user.addresses)
 
     userRepository.commit()
 
@@ -53,6 +51,7 @@ def edit(id, user):
     validation(user)
 
     current_user = userRepository.get_by_id(id)
+    # addresses = userRepository.get_addresses_by_user_id(id)
 
     if current_user is not None:
         current_user.fullname = user.fullname if user.fullname is not None else current_user.fullname
@@ -61,9 +60,6 @@ def edit(id, user):
         current_user.email = user.email if user.email is not None else current_user.email
         current_user.status = user.status if user.status is not None else current_user.status
         current_user.modified_date = Datetime.utc_now()
-        # current_user.addresses.extend(user.addresses)
-
-        # addressRepository.add_range(user.addresses)
 
         userRepository.commit()
 

@@ -31,8 +31,16 @@ class User(db.Model):
                                 backref='user',
                                 lazy=True)
 
-    def __init__(self, code, fullname, mobile_number, birth_date, email, status, id=None,
-                 creation_date=None, modified_date=None):
+    def __init__(self,
+                 code,
+                 fullname,
+                 mobile_number,
+                 birth_date,
+                 email,
+                 status,
+                 id=None,
+                 creation_date=None,
+                 modified_date=None):
         self.id = id
         self.code = code
         self.fullname = fullname
