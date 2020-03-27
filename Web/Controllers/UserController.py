@@ -8,10 +8,10 @@ import uuid
 sub = Blueprint('todo_api', __name__, url_prefix='/api/users')
 
 
-@sub.route('/getAll_by_query', methods=["GET"])
-def get_all_by_query():
-    response = userService.get_all_by_query()
-    result = users_schema.dump(response)
+@sub.route('/get_by_id_with_query/<int:userId>', methods=["GET"])
+def get_by_id_with_query(userId):
+    response = userService.get_by_id_with_query(userId)
+    result = user_schema.dump(response)
 
     return jsonify(result)
 
@@ -78,7 +78,7 @@ def add():
         postal_code = address['postal_code']
         more_address = address['more_address']
 
-        new_address = Address(None, country_name, city_name, postal_code, more_address)
+        new_address = Address(country_name, city_name, postal_code, more_address)
         new_user.addresses.append(new_address)
 
     userService.add(new_user)
@@ -108,8 +108,9 @@ def edit(userId):
         more_address = address['more_address']
 
         if id is None:
-            new_address = Address(country_name, city_name, postal_code, more_address)
-            edit_user.addresses.append(new_address)
+            pass
+            # new_address = Address(country_name, city_name, postal_code, more_address)
+            # edit_user.addresses.append(new_address)
         else:
             edit_address = Address(id, country_name, city_name, postal_code, more_address)
             edit_user.addresses.append(edit_address)

@@ -7,13 +7,17 @@ def add(user):
     db.session.add(user)
 
 
+def add_range(users):
+    db.session.add(users)
+
+
 def delete(user):
     db.session.delete(user)
 
 
-def get_all_by_query():
-    command = '''SELECT
-                        u.id,
+def get_by_id_with_query(userId):
+    command = f'''SELECT
+                        u.id AS user_id,
                         u.code,
                         u.fullname,
                         u.mobile_number,
@@ -22,13 +26,16 @@ def get_all_by_query():
                         u.status,
                         u.creation_date,
                         u.modified_date,
+                        a.id AS address_id,
                         a.country_name,
                         a.city_name,
                         a.postal_code,
                         a.more_address
                  FROM
                         user AS u INNER JOIN 
-                        address as a ON u.id = a.user_id    
+                        address as a ON u.id = a.user_id
+                 WHERE
+                        u.id ={userId}           
               '''
 
     return SqlDataProvider().execute_query_command(command)
@@ -51,7 +58,7 @@ def get_by_id(id):
 
 
 def get_by_mobile(mobile):
-    return User.query.filter_by(mobile_number=mobile).first()
+    return User.query.filter_by(mobile_number=mobile).one()
 
 
 def commit():

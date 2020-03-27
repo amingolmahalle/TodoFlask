@@ -22,17 +22,13 @@ class Address(db.Model):
                         db.ForeignKey('user.id', ondelete='CASCADE'),
                         nullable=False)
 
-    def __init__(self, id, country_name, city_name, postal_code, more_address, modified_date=None):
+    def __init__(self, country_name, city_name, postal_code, more_address,
+                 id=None, user_id=None, creation_date=None, modified_date=None):
         self.id = id
+        self.user_id = user_id
         self.country_name = country_name
         self.city_name = city_name
         self.postal_code = postal_code
         self.more_address = more_address
-        self.modified_date = modified_date
-
-    def __init__(self, country_name, city_name, postal_code, more_address, modified_date=None):
-        self.country_name = country_name
-        self.city_name = city_name
-        self.postal_code = postal_code
-        self.more_address = more_address
+        self.creation_date = creation_date
         self.modified_date = modified_date

@@ -1,7 +1,11 @@
 from Models.Domain.Address import db, Address
 
 
-def add(addresses):
+def add(address):
+    db.session.add(address)
+
+
+def add_range(addresses):
     db.session.add_all(addresses)
 
 

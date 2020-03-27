@@ -1,6 +1,7 @@
 from Services.Validations.UserValidation import validation
 import Repositories.UserRepository as userRepository
 import Repositories.AddressRepository as addressRepository
+import Services.Mapping.UserMapper as UserMapper
 import Utils.Datetime as Datetime
 
 
@@ -8,10 +9,14 @@ def get_all_by_pagination(page, per_page):
     return userRepository.get_all_by_pagination(page, per_page)
 
 
-def get_all_by_query():
-    response = userRepository.get_all_by_query()
+def get_by_id_with_query(userId):
+    result = None
+    response = userRepository.get_by_id_with_query(userId)
 
-    return response
+    if len(response) > 0:
+        result = UserMapper.create(response)
+
+    return result
 
 
 def get_all():
@@ -37,7 +42,7 @@ def add(user):
     # validation address
 
     userRepository.add(user)
-    addressRepository.add(user.addresses)
+    addressRepository.add_range(user.addresses)
 
     userRepository.commit()
 
@@ -56,9 +61,10 @@ def edit(id, user):
         current_user.email = user.email if user.email is not None else current_user.email
         current_user.status = user.status if user.status is not None else current_user.status
         current_user.modified_date = Datetime.utc_now()
-        current_user.addresses = user.addresses
+        # current_user.addresses.extend(user.addresses)
 
-        userRepository.merge(current_user)
+        # addressRepository.add_range(user.addresses)
+
         userRepository.commit()
 
     return current_user
