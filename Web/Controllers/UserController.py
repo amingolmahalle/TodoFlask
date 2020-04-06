@@ -1,16 +1,29 @@
 from flask import Blueprint, request, jsonify
-from Models.Domain.User import User
-from Models.Schema.UserSchema import user_schema, users_schema
-from Models.Domain.Address import Address
-import Services.UserService as userService
-import uuid
+from Service.Commands.AddUser.AddUserService import AddUserService
+from Service.Commands.EditUser.EditUserService import EditUserService
+from Service.Commands.DeleteUser.DeleteUserService import DeleteUserService
+from Service.Queries.GetAllUser.GetAllUserService import GetAllUserService
+from Service.Queries.GetAllUserByPagination.GetAllUserByPaginationService import GetAllUserByPaginationService
+from Service.Queries.GetUserById.GetUserByIdService import GetUserByIdService
+from Service.Queries.GetUserByIdWithQuery.GetUserByIdWithQueryService import GetUserByIdWithQueryService
+from Service.Queries.GetUserByMobile.GetUserByMobileService import GetUserByMobileService
+from Domain.Service.Commands.AddUser.AddUserRequest import AddUserRequest
+from Domain.Service.Commands.EditUser.EditUserRequest import EditUserRequest
+from Domain.Service.Queries.GetUserByMobile.GetUserByMobileRequest import GetUserByMobileRequest
+from Domain.Service.Queries.GetAllUserByPagination.GetAllUserByPaginationRequest import GetAllUserByPaginationRequest
+from Domain.Service.Queries.GetUserById.GetUserByIdRequest import GetUserByIdRequest
+from Domain.Service.Queries.GetUserByIdWithQuery.GetUserByIdWithQueryRequest import GetUserByIdWithQueryRequest
+from Domain.Service.Commands.DeleteUser.DeleteUserRequest import DeleteUserRequest
+from Domain.Schema.UserSchema import user_schema, users_schema
 
 sub = Blueprint('todo_api', __name__, url_prefix='/api/users')
 
 
 @sub.route('/get_by_id_with_query/<int:userId>', methods=["GET"])
 def get_by_id_with_query(userId):
-    response = userService.get_by_id_with_query(userId)
+    map_request = GetUserByIdWithQueryRequest(userId)
+    response = GetUserByIdWithQueryService().Execute(map_request)
+
     result = user_schema.dump(response)
 
     return jsonify(result)
@@ -26,7 +39,10 @@ def get_all_by_pagination():
     page = request_data.get('page', 1)
     per_page = request_data.get('per_page', 10)
 
-    response = userService.get_all_by_pagination(page, per_page)
+    map_request = GetAllUserByPaginationRequest(page, per_page)
+
+    response = GetAllUserByPaginationService().Execute(map_request)
+
     result = users_schema.dump(response)
 
     return jsonify(result)
@@ -34,7 +50,8 @@ def get_all_by_pagination():
 
 @sub.route('/getAll', methods=["GET"])
 def get_all():
-    response = userService.get_all()
+    response = GetAllUserService().Execute()
+
     result = users_schema.dump(response)
 
     return jsonify(result)
@@ -42,7 +59,9 @@ def get_all():
 
 @sub.route('/getById/<int:userId>', methods=["GET"])
 def get_by_id(userId):
-    response = userService.get_by_id(userId)
+    map_request = GetUserByIdRequest(userId)
+    response = GetUserByIdService().Execute(map_request)
+
     result = user_schema.dump(response)
 
     return jsonify(result)
@@ -50,7 +69,9 @@ def get_by_id(userId):
 
 @sub.route('/getByMobile/<string:mobile>', methods=["GET"])
 def get_by_mobile(mobile):
-    response = userService.get_by_mobile(mobile)
+    map_request = GetUserByMobileRequest(mobile)
+    response = GetUserByMobileService().Execute(map_request)
+
     result = user_schema.dump(response)
 
     return jsonify(result)
@@ -63,27 +84,17 @@ def add():
 
     request_data = request.get_json()
 
-    code = str(uuid.uuid4())
     fullname = request_data.get('fullname')
     mobile_number = request_data.get('mobile_number')
     birth_date = request_data.get('birth_date')
     email = request_data.get('email')
-    status = True
+    addresses = request_data.get('addresses')
 
-    new_user = User(code, fullname, mobile_number, birth_date, email, status)
+    map_request = AddUserRequest(fullname, mobile_number, birth_date, email, addresses)
 
-    for address in request_data.get('addresses'):
-        country_name = address['country_name']
-        city_name = address['city_name']
-        postal_code = address['postal_code']
-        more_address = address['more_address']
+    AddUserService().Execute(map_request)
 
-        new_address = Address(country_name, city_name, postal_code, more_address)
-        new_user.addresses.append(new_address)
-
-    userService.add(new_user)
-
-    return user_schema.jsonify(new_user)
+    return 'OK'
 
 
 @sub.route('/edit/<int:userId>', methods=['PUT'])
@@ -93,35 +104,25 @@ def edit(userId):
 
     request_data = request.get_json()
 
+    id = userId
     fullname = request_data.get('fullname', None)
     mobile_number = request_data.get('mobile_number', None)
     birth_date = request_data.get('birth_date', None)
     email = request_data.get('email', None)
     status = request_data.get('status', None)
-    edit_user = User(None, fullname, mobile_number, birth_date, email, status, None)
+    addresses = request_data.get('addresses')
 
-    for address in request_data.get('addresses'):
-        id = address['id']
-        country_name = address['country_name']
-        city_name = address['city_name']
-        postal_code = address['postal_code']
-        more_address = address['more_address']
+    edit_user = EditUserRequest(id, fullname, mobile_number, birth_date, email, status, addresses)
 
-        if id is None:
-            pass
-            # new_address = Address(country_name, city_name, postal_code, more_address)
-            # edit_user.addresses.append(new_address)
-        else:
-            edit_address = Address(id, country_name, city_name, postal_code, more_address)
-            edit_user.addresses.append(edit_address)
+    EditUserService().Execute(edit_user)
 
-    current_user = userService.edit(userId, edit_user)
-
-    return user_schema.jsonify(current_user)
+    return 'OK!'
 
 
 @sub.route('/delete/<int:userId>', methods=['DELETE'])
 def delete_by_id(userId):
-    userService.delete_by_id(userId)
+    map_request = DeleteUserRequest(userId)
+
+    DeleteUserService().Execute(map_request)
 
     return 'OK!'
