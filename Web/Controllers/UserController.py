@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import request, jsonify
 from Service.Commands.AddUser.AddUserService import AddUserService
 from Service.Commands.EditUser.EditUserService import EditUserService
 from Service.Commands.DeleteUser.DeleteUserService import DeleteUserService
@@ -15,11 +15,13 @@ from Domain.Service.Queries.GetUserById.GetUserByIdRequest import GetUserByIdReq
 from Domain.Service.Queries.GetUserByIdWithQuery.GetUserByIdWithQueryRequest import GetUserByIdWithQueryRequest
 from Domain.Service.Commands.DeleteUser.DeleteUserRequest import DeleteUserRequest
 from Domain.Schema.UserSchema import user_schema, users_schema
+# from Core.DataResult.ApiResponse import MakeResponse, StatusCode
+from Core.Swagger import Swagger
 
-sub = Blueprint('todo_api', __name__, url_prefix='/api/users')
+app = Swagger('User')
 
 
-@sub.route('/get_by_id_with_query/<int:userId>', methods=["GET"])
+@app.route('/get_by_id_with_query/<int:userId>', methods=["GET"])
 def get_by_id_with_query(userId):
     map_request = GetUserByIdWithQueryRequest(userId)
     response = GetUserByIdWithQueryService().Execute(map_request)
@@ -29,7 +31,7 @@ def get_by_id_with_query(userId):
     return jsonify(result)
 
 
-@sub.route('/getAll_by_pagination', methods=["POST"])
+@app.route('/getAll_by_pagination', methods=["POST"])
 def get_all_by_pagination():
     if not request.is_json:
         raise Exception('Request Invalid. Because json Format Incorrect.')
@@ -48,16 +50,17 @@ def get_all_by_pagination():
     return jsonify(result)
 
 
-@sub.route('/getAll', methods=["GET"])
+@app.route('/getAll', methods=["GET"])
 def get_all():
     response = GetAllUserService().Execute()
 
+    # return MakeResponse(response, StatusCode.OK)
     result = users_schema.dump(response)
 
     return jsonify(result)
 
 
-@sub.route('/getById/<int:userId>', methods=["GET"])
+@app.route('/getById/<int:userId>', methods=["GET"])
 def get_by_id(userId):
     map_request = GetUserByIdRequest(userId)
     response = GetUserByIdService().Execute(map_request)
@@ -67,7 +70,7 @@ def get_by_id(userId):
     return jsonify(result)
 
 
-@sub.route('/getByMobile/<string:mobile>', methods=["GET"])
+@app.route('/getByMobile/<string:mobile>', methods=["GET"])
 def get_by_mobile(mobile):
     map_request = GetUserByMobileRequest(mobile)
     response = GetUserByMobileService().Execute(map_request)
@@ -77,7 +80,7 @@ def get_by_mobile(mobile):
     return jsonify(result)
 
 
-@sub.route('/add', methods=['POST'])
+@app.route('/add', methods=['POST'])
 def add():
     if not request.is_json:
         raise Exception('Request Invalid. Because json Format Incorrect.')
@@ -97,7 +100,7 @@ def add():
     return 'OK'
 
 
-@sub.route('/edit/<int:userId>', methods=['PUT'])
+@app.route('/edit/<int:userId>', methods=['PUT'])
 def edit(userId):
     if not request.is_json:
         raise Exception('Request Invalid. Because json Format Incorrect.')
@@ -119,7 +122,7 @@ def edit(userId):
     return 'OK!'
 
 
-@sub.route('/delete/<int:userId>', methods=['DELETE'])
+@app.route('/delete/<int:userId>', methods=['DELETE'])
 def delete_by_id(userId):
     map_request = DeleteUserRequest(userId)
 
