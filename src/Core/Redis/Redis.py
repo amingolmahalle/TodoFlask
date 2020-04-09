@@ -1,6 +1,6 @@
 import redis
 import time
-from Web.Static import REDIS_ADDRESS, APP_NAME
+from Web.Configs.AppSettings import REDIS_ADDRESS, APP_NAME
 import atexit
 
 
@@ -9,7 +9,7 @@ class Redis:
 
     def __new__(cls):
         if not Redis.pool:
-            addr = REDIS_ADDR[0].split(':')
+            addr = REDIS_ADDRESS[0].split(':')
             Redis.pool = redis.BlockingConnectionPool(host=addr[0], port=addr[1], db=0, max_connections=100)
         return redis.Redis(connection_pool=Redis.pool)
 
