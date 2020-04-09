@@ -4,5 +4,6 @@ PyMySQL
 Flask-SQLAlchemy
 flask-marshmallow
 marshmallow-sqlalchemy
+redis
 Flask-Cors
 munch
