@@ -16,4 +16,5 @@ class GetAllUserByPaginationFactory:
                     addresses.append(AddressDto(address))
 
             response.append(GetAllUserByPaginationResponse(user, addresses))
+            
         return response

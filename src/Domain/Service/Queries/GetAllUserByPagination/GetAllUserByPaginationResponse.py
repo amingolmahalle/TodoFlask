@@ -21,6 +21,3 @@ class AddressDto:
         self.more_address = address.more_address
         self.creation_date = address.creation_date
         self.modified_date = address.modified_date
-
-
-

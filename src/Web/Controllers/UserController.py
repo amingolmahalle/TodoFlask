@@ -1,4 +1,4 @@
-from flask import request, jsonify
+from flask import make_response, request, jsonify
 from Service.Commands.AddUser.AddUserService import AddUserService
 from Service.Commands.EditUser.EditUserService import EditUserService
 from Service.Commands.DeleteUser.DeleteUserService import DeleteUserService
@@ -15,7 +15,7 @@ from Domain.Service.Queries.GetUserById.GetUserByIdRequest import GetUserByIdReq
 from Domain.Service.Queries.GetUserByIdWithQuery.GetUserByIdWithQueryRequest import GetUserByIdWithQueryRequest
 from Domain.Service.Commands.DeleteUser.DeleteUserRequest import DeleteUserRequest
 from Domain.Schema.UserSchema import user_schema, users_schema
-from Core.ResponseWrapper import ApiResponse
+from Web.ResponseWrapper import StatusCode
 from Core.Swagger import Swagger
 from Core.Redis.Redis import Redis
 from Utils.String import check_mobile
@@ -26,6 +26,7 @@ app = Swagger('User')
 
 @app.route(
     '/SendOtp/<string:mobile>',
+    validations=dict(),
     methods=["POST"]
 )
 def send_otp(mobile):
@@ -41,8 +42,7 @@ def send_otp(mobile):
         code = random.randrange(1111, 9999)
         redis.setex(key, ttl, code)
 
-    return ApiResponse.MakeResponse(f'otp code for {mobile} is {redis.get(key).decode("utf8")}.',
-                                    ApiResponse.StatusCode.OK)
+    return make_response(jsonify(f'otp code for {mobile} is {redis.get(key).decode("utf8")}.'), StatusCode.OK.value)
 
 
 @app.route(
@@ -77,7 +77,7 @@ def get_all_by_pagination():
 
     result = users_schema.dump(response)
 
-    return jsonify(result)
+    return make_response(jsonify(result), StatusCode.OK.value)
 
 
 @app.route(
@@ -88,10 +88,9 @@ def get_all_by_pagination():
 def get_all():
     response = GetAllUserService().Execute()
 
-    # return MakeResponse(response, StatusCode.OK)
     result = users_schema.dump(response)
 
-    return jsonify(result)
+    return make_response(jsonify(result), StatusCode.OK.value)
 
 
 @app.route(
@@ -104,7 +103,7 @@ def get_by_id(userId):
 
     result = user_schema.dump(response)
 
-    return jsonify(result)
+    return make_response(jsonify(result), StatusCode.OK.value)
 
 
 @app.route(
@@ -117,7 +116,7 @@ def get_by_mobile(mobile):
 
     result = user_schema.dump(response)
 
-    return jsonify(result)
+    return make_response(jsonify(result), StatusCode.OK.value)
 
 
 @app.route(
@@ -139,7 +138,7 @@ def add():
 
     AddUserService().Execute(map_request)
 
-    return 'OK'
+    return make_response(jsonify({}), StatusCode.OK.value)
 
 
 @app.route(
@@ -164,7 +163,7 @@ def edit(userId):
 
     EditUserService().Execute(edit_user)
 
-    return 'OK!'
+    return make_response(jsonify({}), StatusCode.OK.value)
 
 
 @app.route(
@@ -176,4 +175,4 @@ def delete_by_id(userId):
 
     DeleteUserService().Execute(map_request)
 
-    return 'OK!'
+    return make_response(jsonify({}), StatusCode.OK.value)
