@@ -1,5 +1,5 @@
 from flask import jsonify, make_response
-from Core.DataResult.StatusCode import StatusCode
+from Core.ResponseWrapper.StatusCode import StatusCode
 
 
 class ValidationFailedException(Exception):

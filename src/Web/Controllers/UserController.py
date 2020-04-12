@@ -15,13 +15,40 @@ from Domain.Service.Queries.GetUserById.GetUserByIdRequest import GetUserByIdReq
 from Domain.Service.Queries.GetUserByIdWithQuery.GetUserByIdWithQueryRequest import GetUserByIdWithQueryRequest
 from Domain.Service.Commands.DeleteUser.DeleteUserRequest import DeleteUserRequest
 from Domain.Schema.UserSchema import user_schema, users_schema
-# from Core.DataResult.ApiResponse import MakeResponse, StatusCode
-from src.Core.Swagger import Swagger
+from Core.ResponseWrapper import ApiResponse
+from Core.Swagger import Swagger
+from Core.Redis.Redis import Redis
+from Utils.String import check_mobile
+import random
 
 app = Swagger('User')
 
 
-@app.route('/get_by_id_with_query/<int:userId>', methods=["GET"])
+@app.route(
+    '/SendOtp/<string:mobile>',
+    methods=["POST"]
+)
+def send_otp(mobile):
+    if not check_mobile(mobile):
+        raise Exception('invalid mobile number')
+
+    key = f'otp::{mobile}'
+    redis = Redis()
+    ttl = redis.ttl(key)
+
+    if ttl < 1:
+        ttl = 120
+        code = random.randrange(1111, 9999)
+        redis.setex(key, ttl, code)
+
+    return ApiResponse.MakeResponse(f'otp code for {mobile} is {redis.get(key).decode("utf8")}.',
+                                    ApiResponse.StatusCode.OK)
+
+
+@app.route(
+    '/getByIdWithQuery/<int:userId>',
+    methods=["GET"]
+)
 def get_by_id_with_query(userId):
     map_request = GetUserByIdWithQueryRequest(userId)
     response = GetUserByIdWithQueryService().Execute(map_request)
@@ -31,7 +58,10 @@ def get_by_id_with_query(userId):
     return jsonify(result)
 
 
-@app.route('/getAll_by_pagination', methods=["POST"])
+@app.route(
+    '/getAllByPagination',
+    methods=["POST"]
+)
 def get_all_by_pagination():
     if not request.is_json:
         raise Exception('Request Invalid. Because json Format Incorrect.')
@@ -50,7 +80,11 @@ def get_all_by_pagination():
     return jsonify(result)
 
 
-@app.route('/getAll', methods=["GET"])
+@app.route(
+    '/getAll',
+    summary='retrieve users info',
+    methods=["GET"]
+)
 def get_all():
     response = GetAllUserService().Execute()
 
@@ -60,7 +94,10 @@ def get_all():
     return jsonify(result)
 
 
-@app.route('/getById/<int:userId>', methods=["GET"])
+@app.route(
+    '/getById/<int:userId>',
+    methods=["GET"]
+)
 def get_by_id(userId):
     map_request = GetUserByIdRequest(userId)
     response = GetUserByIdService().Execute(map_request)
@@ -70,7 +107,10 @@ def get_by_id(userId):
     return jsonify(result)
 
 
-@app.route('/getByMobile/<string:mobile>', methods=["GET"])
+@app.route(
+    '/getByMobile/<string:mobile>',
+    methods=["GET"]
+)
 def get_by_mobile(mobile):
     map_request = GetUserByMobileRequest(mobile)
     response = GetUserByMobileService().Execute(map_request)
@@ -80,7 +120,9 @@ def get_by_mobile(mobile):
     return jsonify(result)
 
 
-@app.route('/add', methods=['POST'])
+@app.route(
+    '/add',
+    methods=['POST'])
 def add():
     if not request.is_json:
         raise Exception('Request Invalid. Because json Format Incorrect.')
@@ -100,7 +142,10 @@ def add():
     return 'OK'
 
 
-@app.route('/edit/<int:userId>', methods=['PUT'])
+@app.route(
+    '/edit/<int:userId>',
+    methods=['PUT']
+)
 def edit(userId):
     if not request.is_json:
         raise Exception('Request Invalid. Because json Format Incorrect.')
@@ -122,7 +167,10 @@ def edit(userId):
     return 'OK!'
 
 
-@app.route('/delete/<int:userId>', methods=['DELETE'])
+@app.route(
+    '/delete/<int:userId>',
+    methods=['DELETE']
+)
 def delete_by_id(userId):
     map_request = DeleteUserRequest(userId)
 

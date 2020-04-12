@@ -4,10 +4,10 @@ import re
 def check_email(email):
     pattern = r"([^@|\s]+@[^@]+\.[^@|\s]+)"
 
-    return bool(re.match(f"{pattern}", email))
+    return re.compile(pattern).match(email)
 
 
 def check_mobile(mobile):
-    pattern = r"(^09\d{9}$)"
+    pattern = r"(^(09)[0-9]{9}$)"
 
-    return bool(re.match(f"{pattern}", mobile))
+    return re.compile(pattern).match(mobile)
