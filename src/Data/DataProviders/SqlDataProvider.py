@@ -1,5 +1,5 @@
 import pymysql
-from Web.Configs.AppSettings import DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_PORT
+from Web.Configs.AppSettings import DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME
 
 
 class SqlDataProvider:

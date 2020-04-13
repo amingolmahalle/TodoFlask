@@ -15,7 +15,7 @@ from Domain.Service.Queries.GetUserById.GetUserByIdRequest import GetUserByIdReq
 from Domain.Service.Queries.GetUserByIdWithQuery.GetUserByIdWithQueryRequest import GetUserByIdWithQueryRequest
 from Domain.Service.Commands.DeleteUser.DeleteUserRequest import DeleteUserRequest
 from Domain.Schema.UserSchema import user_schema, users_schema
-from Web.ResponseWrapper import StatusCode
+from Web.ResponseWrapper.StatusCode import StatusCode
 from Core.Swagger import Swagger
 from Core.Redis.Redis import Redis
 from Utils.String import check_mobile
@@ -26,8 +26,9 @@ app = Swagger('User')
 
 @app.route(
     '/SendOtp/<string:mobile>',
-    validations=dict(),
-    methods=["POST"]
+    methods=["POST"],
+    tags='login',
+    summary='send otp for user'
 )
 def send_otp(mobile):
     if not check_mobile(mobile):
@@ -47,7 +48,8 @@ def send_otp(mobile):
 
 @app.route(
     '/getByIdWithQuery/<int:userId>',
-    methods=["GET"]
+    methods=["GET"],
+    tags='user'
 )
 def get_by_id_with_query(userId):
     map_request = GetUserByIdWithQueryRequest(userId)
@@ -60,7 +62,8 @@ def get_by_id_with_query(userId):
 
 @app.route(
     '/getAllByPagination',
-    methods=["POST"]
+    methods=["POST"],
+    tags='user'
 )
 def get_all_by_pagination():
     if not request.is_json:
@@ -83,7 +86,8 @@ def get_all_by_pagination():
 @app.route(
     '/getAll',
     summary='retrieve users info',
-    methods=["GET"]
+    methods=["GET"],
+    tags='user'
 )
 def get_all():
     response = GetAllUserService().Execute()
@@ -95,7 +99,8 @@ def get_all():
 
 @app.route(
     '/getById/<int:userId>',
-    methods=["GET"]
+    methods=["GET"],
+    tags='user'
 )
 def get_by_id(userId):
     map_request = GetUserByIdRequest(userId)
@@ -108,7 +113,8 @@ def get_by_id(userId):
 
 @app.route(
     '/getByMobile/<string:mobile>',
-    methods=["GET"]
+    methods=["GET"],
+    tags='user'
 )
 def get_by_mobile(mobile):
     map_request = GetUserByMobileRequest(mobile)
@@ -121,7 +127,9 @@ def get_by_mobile(mobile):
 
 @app.route(
     '/add',
-    methods=['POST'])
+    methods=['POST'],
+    tags='user'
+)
 def add():
     if not request.is_json:
         raise Exception('Request Invalid. Because json Format Incorrect.')
@@ -143,7 +151,8 @@ def add():
 
 @app.route(
     '/edit/<int:userId>',
-    methods=['PUT']
+    methods=['PUT'],
+    tags='user'
 )
 def edit(userId):
     if not request.is_json:
@@ -168,7 +177,8 @@ def edit(userId):
 
 @app.route(
     '/delete/<int:userId>',
-    methods=['DELETE']
+    methods=['DELETE'],
+    tags='user'
 )
 def delete_by_id(userId):
     map_request = DeleteUserRequest(userId)
