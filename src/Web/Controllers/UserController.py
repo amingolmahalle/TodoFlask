@@ -26,7 +26,7 @@ app = Swagger('User')
 
 @app.route(
     '/SendOtp/<string:mobile>',
-    methods=["POST"],
+    methods=["post"],
     tags='login',
     summary='send otp for user'
 )
@@ -48,7 +48,7 @@ def send_otp(mobile):
 
 @app.route(
     '/getByIdWithQuery/<int:userId>',
-    methods=["GET"],
+    methods=["get"],
     tags='user'
 )
 def get_by_id_with_query(userId):
@@ -62,7 +62,7 @@ def get_by_id_with_query(userId):
 
 @app.route(
     '/getAllByPagination',
-    methods=["POST"],
+    methods=["post"],
     tags='user'
 )
 def get_all_by_pagination():
@@ -86,7 +86,7 @@ def get_all_by_pagination():
 @app.route(
     '/getAll',
     summary='retrieve users info',
-    methods=["GET"],
+    methods=["get"],
     tags='user'
 )
 def get_all():
@@ -99,7 +99,7 @@ def get_all():
 
 @app.route(
     '/getById/<int:userId>',
-    methods=["GET"],
+    methods=["get"],
     tags='user'
 )
 def get_by_id(userId):
@@ -113,7 +113,7 @@ def get_by_id(userId):
 
 @app.route(
     '/getByMobile/<string:mobile>',
-    methods=["GET"],
+    methods=["get"],
     tags='user'
 )
 def get_by_mobile(mobile):
@@ -127,7 +127,7 @@ def get_by_mobile(mobile):
 
 @app.route(
     '/add',
-    methods=['POST'],
+    methods=['get'],
     tags='user'
 )
 def add():
@@ -151,7 +151,7 @@ def add():
 
 @app.route(
     '/edit/<int:userId>',
-    methods=['PUT'],
+    methods=['put'],
     tags='user'
 )
 def edit(userId):
@@ -177,7 +177,7 @@ def edit(userId):
 
 @app.route(
     '/delete/<int:userId>',
-    methods=['DELETE'],
+    methods=['delete'],
     tags='user'
 )
 def delete_by_id(userId):
