@@ -93,7 +93,7 @@ class Swagger(Blueprint):
                             })
                     dummy = paths[done] = {}
                     for method in item['methods']:
-                        dummy[method] = {
+                        dummy[str(method).lower()] = {
                             'summary': item['summary'],
                             'consumes': [item['consumes']],
                             'produces': [item['produces']],
