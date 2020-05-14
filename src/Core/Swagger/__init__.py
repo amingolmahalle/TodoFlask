@@ -2,6 +2,7 @@ from os import path
 from flask import make_response, jsonify, Blueprint
 from functools import wraps
 from werkzeug.routing import parse_rule
+from Core.Validator import from_request
 import json
 
 
@@ -222,8 +223,7 @@ class Swagger(Blueprint):
                     pass
                 # raw_auth(dict(party_type=party_type, soft_check=soft_check), kwargs)
                 if validations:
-                    pass
-                # kwargs['data'] = from_request(**vals)
+                    kwargs['data'] = from_request(**vals)
                 return f(*args, **kwargs)
 
             if isinstance(rule, list):

@@ -1,6 +1,6 @@
-import redis
 from Web.Configs.AppSettings import REDIS_ADDRESS, APP_NAME
 import time
+import redis
 
 
 class Redis:

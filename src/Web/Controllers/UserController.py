@@ -1,4 +1,4 @@
-from flask import make_response, request, jsonify
+from flask import make_response, jsonify
 from Service.Commands.AddUser.AddUserService import AddUserService
 from Service.Commands.EditUser.EditUserService import EditUserService
 from Service.Commands.DeleteUser.DeleteUserService import DeleteUserService
@@ -17,24 +17,23 @@ from Domain.Service.Commands.DeleteUser.DeleteUserRequest import DeleteUserReque
 from Domain.Schema.UserSchema import user_schema, users_schema
 from Web.ResponseWrapper.StatusCode import StatusCode
 from Core.Swagger import Swagger
-from Core.Redis.Redis import Redis
-from Utils.String import check_mobile
+from Core.Redis import Redis
 import random
 
 app = Swagger('User')
 
 
 @app.route(
-    '/SendOtp/<string:mobile>',
+    '/SendOtp',
     methods=["post"],
     tags='login',
-    summary='send otp for user'
+    summary='send otp for user',
+    validations=dict(
+        mobile_number='required string mobile'
+    )
 )
-def send_otp(mobile):
-    if not check_mobile(mobile):
-        raise Exception('invalid mobile number')
-
-    key = f'otp::{mobile}'
+def send_otp(data):
+    key = f'otp::{data.mobile_number}'
     redis = Redis()
     ttl = redis.ttl(key)
 
@@ -43,13 +42,15 @@ def send_otp(mobile):
         code = random.randrange(1111, 9999)
         redis.setex(key, ttl, code)
 
-    return make_response(jsonify(f'otp code for {mobile} is {redis.get(key).decode("utf8")}.'), StatusCode.OK.value)
+    return make_response(jsonify(f'otp code for {data.mobile} is {redis.get(key).decode("utf8")}.'),
+                         StatusCode.OK.value)
 
 
 @app.route(
     '/getByIdWithQuery/<int:userId>',
     methods=["get"],
-    tags='user'
+    tags='user',
+    summary='get user by id with query',
 )
 def get_by_id_with_query(userId):
     map_request = GetUserByIdWithQueryRequest(userId)
@@ -63,18 +64,15 @@ def get_by_id_with_query(userId):
 @app.route(
     '/getAllByPagination',
     methods=["post"],
-    tags='user'
+    tags='user',
+    summary='get all data by pagination',
+    validations=dict(
+        page='int',
+        per_page='int'
+    )
 )
-def get_all_by_pagination():
-    if not request.is_json:
-        raise Exception('Request Invalid. Because json Format Incorrect.')
-
-    request_data = request.get_json()
-
-    page = request_data.get('page', 1)
-    per_page = request_data.get('per_page', 10)
-
-    map_request = GetAllUserByPaginationRequest(page, per_page)
+def get_all_by_pagination(data):
+    map_request = GetAllUserByPaginationRequest(data.page, data.per_page)
 
     response = GetAllUserByPaginationService().Execute(map_request)
 
@@ -85,9 +83,9 @@ def get_all_by_pagination():
 
 @app.route(
     '/getAll',
-    summary='retrieve users info',
     methods=["get"],
-    tags='user'
+    tags='user',
+    summary='retrieve users info'
 )
 def get_all():
     response = GetAllUserService().Execute()
@@ -100,7 +98,8 @@ def get_all():
 @app.route(
     '/getById/<int:userId>',
     methods=["get"],
-    tags='user'
+    tags='user',
+    summary='get user by id'
 )
 def get_by_id(userId):
     map_request = GetUserByIdRequest(userId)
@@ -114,7 +113,8 @@ def get_by_id(userId):
 @app.route(
     '/getByMobile/<string:mobile>',
     methods=["get"],
-    tags='user'
+    tags='user',
+    summary='get user by mobile number'
 )
 def get_by_mobile(mobile):
     map_request = GetUserByMobileRequest(mobile)
@@ -127,22 +127,24 @@ def get_by_mobile(mobile):
 
 @app.route(
     '/add',
-    methods=['get'],
-    tags='user'
+    methods=['post'],
+    tags='user',
+    summary='add new user',
+    validations=dict(
+        fullname='required string',
+        mobile_number='required string mobile',
+        birth_date='required datetime',
+        email='required string email',
+        addresses='list'
+    )
 )
-def add():
-    if not request.is_json:
-        raise Exception('Request Invalid. Because json Format Incorrect.')
-
-    request_data = request.get_json()
-
-    fullname = request_data.get('fullname')
-    mobile_number = request_data.get('mobile_number')
-    birth_date = request_data.get('birth_date')
-    email = request_data.get('email')
-    addresses = request_data.get('addresses')
-
-    map_request = AddUserRequest(fullname, mobile_number, birth_date, email, addresses)
+def add(data):
+    map_request = AddUserRequest(
+        data.fullname,
+        data.mobile_number,
+        data.birth_date,
+        data.email,
+        data.addresses)
 
     AddUserService().Execute(map_request)
 
@@ -152,23 +154,26 @@ def add():
 @app.route(
     '/edit/<int:userId>',
     methods=['put'],
-    tags='user'
+    tags='user',
+    summary='edit user',
+    validations=dict(
+        fullname='string',
+        mobile_number='string mobile',
+        birth_date='datetime',
+        email='string email',
+        status='bool',
+        addresses='list'
+    )
 )
-def edit(userId):
-    if not request.is_json:
-        raise Exception('Request Invalid. Because json Format Incorrect.')
-
-    request_data = request.get_json()
-
-    id = userId
-    fullname = request_data.get('fullname', None)
-    mobile_number = request_data.get('mobile_number', None)
-    birth_date = request_data.get('birth_date', None)
-    email = request_data.get('email', None)
-    status = request_data.get('status', None)
-    addresses = request_data.get('addresses')
-
-    edit_user = EditUserRequest(id, fullname, mobile_number, birth_date, email, status, addresses)
+def edit(userId, data):
+    edit_user = EditUserRequest(
+        userId,
+        data.fullname,
+        data.mobile_number,
+        data.birth_date,
+        data.email,
+        data.status,
+        data.addresses)
 
     EditUserService().Execute(edit_user)
 
@@ -178,7 +183,11 @@ def edit(userId):
 @app.route(
     '/delete/<int:userId>',
     methods=['delete'],
-    tags='user'
+    tags='user',
+    summary='delete user',
+    validations=dict(
+        userId='required int'
+    )
 )
 def delete_by_id(userId):
     map_request = DeleteUserRequest(userId)

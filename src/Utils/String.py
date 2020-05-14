@@ -1,13 +1,7 @@
-import re
+def is_string_empty(mystring):
+    assert isinstance(mystring, str)
 
-
-def check_email(email):
-    pattern = r"([^@|\s]+@[^@]+\.[^@|\s]+)"
-
-    return re.compile(pattern).match(email)
-
-
-def check_mobile(mobile):
-    pattern = r"(^(09)[0-9]{9}$)"
-
-    return re.compile(pattern).match(mobile)
+    if len(mystring) == 0:
+        return True
+    else:
+        return False
