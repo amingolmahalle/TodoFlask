@@ -7,6 +7,7 @@ from Web.Controllers.UserController import app as user_controller
 from Web.Configs.AppSettings import SECRET_KEY, APP_PORT, DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_PORT
 from Web.Configs.ArgumentsConfig import get_args
 from Core.Validator import register_builtin_validators
+from Core.Exceptions import register_exceptions
 
 if __name__ == '__main__':
     application = Flask(__name__)
@@ -19,6 +20,7 @@ if __name__ == '__main__':
     application.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     application.config["SQLALCHEMY_ECHO"] = True
 
+    register_exceptions(application)
     register_builtin_validators()
 
     db.init_app(application)
